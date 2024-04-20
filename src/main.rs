@@ -27,10 +27,10 @@ fn divider() {
 fn print_menu() {
     let options = vec![
         "Escolha uma opção:",
-        "1 - Cadastrar um novo aluno",
+        "1 - Cadastrar aluno",
         "2 - Alterar aluno",
         "3 - Excluir aluno",
-        "4 - Listar alunos cadastrados",
+        "4 - Listar alunos",
         "5 - Sair",
     ];
     divider();
@@ -38,34 +38,6 @@ fn print_menu() {
         println!("{}", i);
     }
     divider();
-}
-
-fn list_studants(studants: &Vec<Aluno>) {
-    clear_screen();
-    timer(1);
-    if studants.is_empty() {
-        println!("Não há alunos cadastrados");
-        let mut input = String::new();
-        println!("Pressione enter para continuar");
-        std::io::stdin().read_line(&mut input).unwrap();
-        return;
-    }
-    println!("Alunos cadastrados:");
-    for aluno in studants.iter() {
-        divider();
-
-        println!("Nome: {}", aluno.nome);
-        println!("Matrícula: {}", aluno.matricula);
-        println!("Notas:");
-        for nota in &aluno.notas {
-            println!("          {} : {}", nota.disciplina, nota.nota);
-        }
-        divider();
-        let mut input = String::new();
-        println!("Pressione enter para continuar");
-        std::io::stdin().read_line(&mut input).unwrap();
-        clear_screen();
-    }
 }
 
 fn register_grades(grades: &mut Vec<Nota>) {
@@ -107,7 +79,7 @@ fn register_grades(grades: &mut Vec<Nota>) {
         .read_line(&mut input)
         .expect("Erro ao ler a opção");
 
-    if input.trim() == "n" {
+    if input.trim().to_lowercase() == "n" {
         return;
     }
 
@@ -144,6 +116,156 @@ fn register_studant(studants: &mut Vec<Aluno>) {
     });
 }
 
+fn change_studant(studants: &mut Vec<Aluno>) {
+    clear_screen();
+    timer(1);
+    if studants.is_empty() {
+        println!("Não há alunos cadastrados");
+        let mut input = String::new();
+        println!("Pressione enter para continuar");
+        std::io::stdin().read_line(&mut input).unwrap();
+        return;
+    }
+
+    for (index, aluno) in studants.iter().enumerate() {
+        println!("id: {} - Nome: {}", index, aluno.nome);
+    }
+
+    let mut index = String::new();
+    println!("Digite o id do aluno que deseja excluir. Ou pressione enter para voltar ao menu:");
+    std::io::stdin().read_line(&mut index).unwrap();
+
+    let index: usize = match index.trim().parse() {
+        Ok(index) => index,
+        Err(_) => {
+            return;
+        }
+    };
+
+    let studant = &mut studants[index];
+
+    clear_screen();
+    divider();
+
+    println!("Nome atual: {}", studant.nome);
+    println!("Deseja alterar o nome? (s/n)");
+    let mut input = String::new();
+    std::io::stdin().read_line(&mut input).unwrap();
+    if input.trim().to_lowercase() == "s" {
+        let mut name = String::new();
+        println!("Digite o novo nome:");
+        std::io::stdin()
+            .read_line(&mut name)
+            .expect("Erro ao ler o nome");
+
+        studant.nome = name.trim().to_string();
+    }
+
+    clear_screen();
+    divider();
+
+    println!("Matrícula atual: {}", studant.matricula);
+    println!("Deseja alterar a matrícula? (s/n)");
+    let mut input = String::new();
+    std::io::stdin().read_line(&mut input).unwrap();
+    if input.trim().to_lowercase() == "s" {
+        let mut registration = String::new();
+        println!("Digite a nova matrícula:");
+        std::io::stdin()
+            .read_line(&mut registration)
+            .expect("Erro ao ler a matrícula");
+
+        studant.matricula = registration.trim().to_string();
+    }
+
+    clear_screen();
+    divider();
+
+    println!("Notas");
+    for nota in &mut studant.notas {
+        println!("Disciplina: {} - Nota: {}", &nota.disciplina, &nota.nota);
+        println!("Deseja alterar a nota? (s/n)");
+
+        let mut input = String::new();
+        std::io::stdin().read_line(&mut input).unwrap();
+
+        if input.trim().to_lowercase() == "s" {
+            let mut grade = String::new();
+            println!("Digite a nova nota:");
+            std::io::stdin()
+                .read_line(&mut grade)
+                .expect("Erro ao ler a nota");
+
+            let grade: f32 = match grade.trim().parse() {
+                Ok(grade) => grade,
+                Err(_) => {
+                    println!("Nota inválida");
+                    return change_studant(studants);
+                }
+            };
+
+            nota.nota = grade;
+        }
+    }
+}
+
+fn delete_studant(studants: &mut Vec<Aluno>) {
+    clear_screen();
+    timer(1);
+    if studants.is_empty() {
+        println!("Não há alunos cadastrados");
+        let mut input = String::new();
+        println!("Pressione enter para continuar");
+        std::io::stdin().read_line(&mut input).unwrap();
+        return;
+    }
+
+    for (index, aluno) in studants.iter().enumerate() {
+        println!("id: {} - Nome: {}", index, aluno.nome);
+    }
+
+    let mut index = String::new();
+    println!("Digite o id do aluno que deseja excluir. Ou pressione enter para voltar ao menu:");
+    std::io::stdin().read_line(&mut index).unwrap();
+
+    let index: usize = match index.trim().parse() {
+        Ok(index) => index,
+        Err(_) => {
+            return;
+        }
+    };
+
+    studants.remove(index);
+}
+
+fn list_studants(studants: &Vec<Aluno>) {
+    clear_screen();
+    timer(1);
+    if studants.is_empty() {
+        println!("Não há alunos cadastrados");
+        let mut input = String::new();
+        println!("Pressione enter para continuar");
+        std::io::stdin().read_line(&mut input).unwrap();
+        return;
+    }
+    println!("Alunos cadastrados:");
+    for aluno in studants.iter() {
+        divider();
+
+        println!("Nome: {}", aluno.nome);
+        println!("Matrícula: {}", aluno.matricula);
+        println!("Notas:");
+        for nota in &aluno.notas {
+            println!("          {} : {}", nota.disciplina, nota.nota);
+        }
+        divider();
+        let mut input = String::new();
+        println!("Pressione enter para continuar");
+        std::io::stdin().read_line(&mut input).unwrap();
+        clear_screen();
+    }
+}
+
 fn main() {
     println!("Iniciando sistema");
 
@@ -159,8 +281,8 @@ fn main() {
 
         match input.trim() {
             "1" => register_studant(&mut studants),
-            "2" => println!("Iniciando alteração de aluno\n"),
-            "3" => println!("Iniciando exclusão de aluno\n"),
+            "2" => change_studant(&mut studants),
+            "3" => delete_studant(&mut studants),
             "4" => list_studants(&studants),
             "5" => {
                 println!("Saindo do sistema\n");
