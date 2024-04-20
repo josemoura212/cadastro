@@ -1,8 +1,14 @@
+use std::collections::HashMap;
 use std::thread::sleep;
 use std::time::Duration;
 
 fn clear_screen() {
     print!("{esc}c", esc = 27 as char);
+}
+
+enum InfoAluno{
+    Texto(String),
+    Nota(Vec<(String, f32)>),
 }
 
 fn timer(time: u64) {
@@ -29,7 +35,7 @@ fn print_menu() {
     divider();
 }
 
-fn list_studants(studants: &Vec<(String, String, Vec<(String, f32)>)>) {
+fn list_studants(studants: &Vec<HashMap<String,InfoAluno>>) {
     clear_screen();
     timer(1);
     if studants.is_empty() {
@@ -40,13 +46,28 @@ fn list_studants(studants: &Vec<(String, String, Vec<(String, f32)>)>) {
         return;
     }
     println!("Alunos cadastrados:");
-    for i in studants.iter() {
+    for aluno in studants.iter() {
         divider();
-        println!("Nome: {}", i.0);
-        println!("Matrícula: {}", i.1);
+        let nome = match aluno.get("Nome").unwrap(){
+            InfoAluno::Texto(nome) => nome,
+            _ => panic!("Erro ao obter nome do aluno"),
+        };
+
+        let matricula = match aluno.get("Matrícula").unwrap(){
+            InfoAluno::Texto(matricula) => matricula,
+            _ => panic!("Erro ao obter matrícula do aluno"),
+        };
+
+        let notas = match aluno.get("Notas").unwrap(){
+            InfoAluno::Nota(notas) => notas,
+            _ => panic!("Erro ao obter notas do aluno"),
+        };
+
+        println!("Nome: {}", nome);
+        println!("Matrícula: {}", matricula);
         println!("Notas:");
-        for j in i.2.iter() {
-            println!("      {} : {}", j.0,j.1);
+        for j in notas.iter() {
+            println!("          {} : {}", j.0,j.1);
         }
         divider();
         let mut input = String::new();
@@ -97,8 +118,10 @@ fn register_grades(grades: &mut Vec<(String, f32)>) {
     return register_grades(grades);
 }
 
-fn register_studant(studants: &mut Vec<(String, String, Vec<(String, f32)>)>) {
+fn register_studant(studants: &mut Vec<HashMap<String,InfoAluno>>) {
     clear_screen();
+
+    let mut studant = HashMap::new();
 
     let mut name = String::new();
     println!("Digite o nome do aluno:");
@@ -108,6 +131,8 @@ fn register_studant(studants: &mut Vec<(String, String, Vec<(String, f32)>)>) {
 
     name = name.trim().to_string();
 
+    studant.insert("Nome".to_string(), InfoAluno::Texto(name));
+
     let mut registration = String::new();
     println!("\nDigite a matrícula do aluno:");
     std::io::stdin()
@@ -116,18 +141,21 @@ fn register_studant(studants: &mut Vec<(String, String, Vec<(String, f32)>)>) {
 
     registration = registration.trim().to_string();
 
+    studant.insert("Matrícula".to_string(), InfoAluno::Texto(registration));
+
     let mut grades: Vec<(String, f32)> = Vec::new();
 
     register_grades(&mut grades);
 
-    let studant = (name, registration, grades);
+    studant.insert("Notas".to_string(), InfoAluno::Nota(grades));
+
     studants.push(studant);
 }
 
 fn main() {
     println!("Iniciando sistema");
 
-    let mut studants: Vec<(String, String, Vec<(String, f32)>)> = Vec::new();
+    let mut studants: Vec<HashMap<String,InfoAluno>> = Vec::new();
 
     loop {
         print_menu();
