@@ -36,11 +36,12 @@ fn list_studants(studants: &Vec<(String,String,Vec<(String,f32)>)>) {
         println!("Matrícula: {}", i.1);
         println!("Notas:");
         for j in i.2.iter() {
-            println!("Disciplina: {}", j.0);
-            println!("Nota: {}", j.1);
+            println!("      {} : {}", j.0,j.1);
         }
         println!("---------------------------------");
     }
+
+    timer(10);
 }
 
 fn register_studant(studants: &mut Vec<(String,String,Vec<(String,f32)>)>) {
@@ -115,8 +116,6 @@ fn main() {
             }
             _ => println!("Opção inválida\n"),
         }
-
-        timer(3);
         clear_screen();
     }
 }
