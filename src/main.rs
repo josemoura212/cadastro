@@ -89,14 +89,6 @@ fn register_grades(grades: &mut Vec<Nota>) {
 fn register_studant(studants: &mut Vec<Aluno>) {
     clear_screen();
 
-    let mut name = String::new();
-    println!("Digite o nome do aluno:");
-    std::io::stdin()
-        .read_line(&mut name)
-        .expect("Erro ao ler o nome");
-
-    name = name.trim().to_string();
-
     let mut registration = String::new();
     println!("\nDigite a matrícula do aluno:");
     std::io::stdin()
@@ -104,6 +96,25 @@ fn register_studant(studants: &mut Vec<Aluno>) {
         .expect("Erro ao ler a matrícula");
 
     registration = registration.trim().to_string();
+
+    let registration = match buscar_aluno_por_matricula(&registration, studants) {
+        Some(_) => {
+            println!("Matrícula já cadastrada");
+            let mut input = String::new();
+            println!("Pressione enter para tentar novamente");
+            std::io::stdin().read_line(&mut input).unwrap();
+            return register_studant(studants);
+        }
+        None => registration,
+    };
+
+    let mut name = String::new();
+    println!("Digite o nome do aluno:");
+    std::io::stdin()
+        .read_line(&mut name)
+        .expect("Erro ao ler o nome");
+
+    name = name.trim().to_string();
 
     let mut grades: Vec<Nota> = Vec::new();
 
@@ -127,20 +138,26 @@ fn change_studant(studants: &mut Vec<Aluno>) {
         return;
     }
 
-    for (index, aluno) in studants.iter().enumerate() {
-        println!("id: {} - Nome: {}", index, aluno.nome);
+    for aluno in studants.iter() {
+        println!("Matricula: {} - Nome: {}", aluno.matricula, aluno.nome);
     }
 
-    let mut index = String::new();
-    println!("Digite o id do aluno que deseja excluir. Ou pressione enter para voltar ao menu:");
-    std::io::stdin().read_line(&mut index).unwrap();
+    let mut matricula = String::new();
+    println!(
+        "Digite a matricula do aluno que deseja excluir. Ou pressione enter para voltar ao menu:"
+    );
+    std::io::stdin().read_line(&mut matricula).unwrap();
 
-    let index: usize = match index.trim().parse() {
-        Ok(index) => index,
-        Err(_) => {
-            return;
-        }
-    };
+    if matricula.trim().is_empty() {
+        return;
+    }
+
+    matricula = matricula.trim().to_string();
+
+    let index = studants
+        .iter()
+        .position(|x| x.matricula == matricula)
+        .unwrap();
 
     let studant = &mut studants[index];
 
@@ -220,12 +237,14 @@ fn delete_studant(studants: &mut Vec<Aluno>) {
         return;
     }
 
-    for  aluno in studants.iter() {
-        println!("matricula: {} - Nome: {}", aluno.matricula, aluno.nome);
+    for aluno in studants.iter() {
+        println!("Matricula: {} - Nome: {}", aluno.matricula, aluno.nome);
     }
 
     let mut matricula = String::new();
-    println!("Digite a matricula do aluno que deseja excluir. Ou pressione enter para voltar ao menu:");
+    println!(
+        "Digite a matricula do aluno que deseja excluir. Ou pressione enter para voltar ao menu:"
+    );
     std::io::stdin().read_line(&mut matricula).unwrap();
 
     if matricula.trim().is_empty() {
@@ -245,19 +264,23 @@ fn delete_studant(studants: &mut Vec<Aluno>) {
             std::io::stdin().read_line(&mut input).unwrap();
             return delete_studant(studants);
         }
-        
     };
 
-    let index = studants.iter().position(|x| x.matricula == aluno.matricula).unwrap();
+    let index = studants
+        .iter()
+        .position(|x| x.matricula == aluno.matricula)
+        .unwrap();
 
     studants.remove(index);
 
     println!("Aluno excluído com sucesso");
     timer(2);
-
 }
 
-fn buscar_aluno_por_matricula<'a>(matricula: &'a String, studants: &'a Vec<Aluno>) -> Option<&'a Aluno> {
+fn buscar_aluno_por_matricula<'a>(
+    matricula: &'a String,
+    studants: &'a Vec<Aluno>,
+) -> Option<&'a Aluno> {
     for aluno in studants.iter() {
         if aluno.matricula == *matricula {
             return Some(aluno);
