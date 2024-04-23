@@ -220,22 +220,43 @@ fn delete_studant(studants: &mut Vec<Aluno>) {
         return;
     }
 
-    for (index, aluno) in studants.iter().enumerate() {
-        println!("id: {} - Nome: {}", index, aluno.nome);
+    for  aluno in studants.iter() {
+        println!("matricula: {} - Nome: {}", aluno.matricula, aluno.nome);
     }
 
-    let mut index = String::new();
-    println!("Digite o id do aluno que deseja excluir. Ou pressione enter para voltar ao menu:");
-    std::io::stdin().read_line(&mut index).unwrap();
+    let mut matricula = String::new();
+    println!("Digite a matricula do aluno que deseja excluir. Ou pressione enter para voltar ao menu:");
+    std::io::stdin().read_line(&mut matricula).unwrap();
 
-    let index: usize = match index.trim().parse() {
-        Ok(index) => index,
-        Err(_) => {
+    matricula = matricula.trim().to_string();
+
+    let aluno = buscar_aluno_por_matricula(&matricula, studants);
+
+    let aluno = match aluno {
+        Some(aluno) => aluno,
+        None => {
+            println!("Aluno não encontrado");
+            let mut input = String::new();
+            println!("Pressione enter para continuar");
+            std::io::stdin().read_line(&mut input).unwrap();
             return;
         }
+        
     };
 
+    let index = studants.iter().position(|x| x.matricula == aluno.matricula).unwrap();
+
     studants.remove(index);
+
+}
+
+fn buscar_aluno_por_matricula<'a>(matricula: &'a String, studants: &'a Vec<Aluno>) -> Option<&'a Aluno> {
+    for aluno in studants.iter() {
+        if aluno.matricula == *matricula {
+            return Some(aluno);
+        }
+    }
+    return None;
 }
 
 fn list_studants(studants: &Vec<Aluno>) {
