@@ -1,4 +1,8 @@
-use crate::{clear_screen, divider, entidades::{Aluno, Nota}, timer};
+use crate::{
+    clear_screen, divider,
+    entidades::{Aluno, Nota},
+    timer,
+};
 
 pub fn register_grades(grades: &mut Vec<Nota>) {
     clear_screen();

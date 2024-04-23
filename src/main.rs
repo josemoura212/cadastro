@@ -1,10 +1,10 @@
-mod tela;
-mod logica;
 mod entidades;
+mod logica;
+mod tela;
 
-use tela::*;
 use entidades::Aluno;
 use logica::*;
+use tela::*;
 
 fn main() {
     println!("Iniciando sistema");
