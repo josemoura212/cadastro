@@ -228,6 +228,10 @@ fn delete_studant(studants: &mut Vec<Aluno>) {
     println!("Digite a matricula do aluno que deseja excluir. Ou pressione enter para voltar ao menu:");
     std::io::stdin().read_line(&mut matricula).unwrap();
 
+    if matricula.trim().is_empty() {
+        return;
+    }
+
     matricula = matricula.trim().to_string();
 
     let aluno = buscar_aluno_por_matricula(&matricula, studants);
@@ -237,9 +241,9 @@ fn delete_studant(studants: &mut Vec<Aluno>) {
         None => {
             println!("Aluno não encontrado");
             let mut input = String::new();
-            println!("Pressione enter para continuar");
+            println!("Pressione enter para tentar novamente");
             std::io::stdin().read_line(&mut input).unwrap();
-            return;
+            return delete_studant(studants);
         }
         
     };
@@ -247,6 +251,9 @@ fn delete_studant(studants: &mut Vec<Aluno>) {
     let index = studants.iter().position(|x| x.matricula == aluno.matricula).unwrap();
 
     studants.remove(index);
+
+    println!("Aluno excluído com sucesso");
+    timer(2);
 
 }
 
