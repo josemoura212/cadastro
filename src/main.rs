@@ -6,6 +6,8 @@ use entidades::Aluno;
 use logica::*;
 use tela::*;
 
+use crate::entidades::AcaoMenu;
+
 fn main() {
     println!("Iniciando sistema");
 
@@ -17,18 +19,25 @@ fn main() {
         let mut input = String::new();
         std::io::stdin().read_line(&mut input).unwrap();
 
+        let input = match input.trim().parse::<AcaoMenu>(){
+            Ok(acao) => acao,
+            Err(_) => {
+                println!("Opção inválida\n");
+                continue;
+            }
+        };
+
         clear_screen();
 
-        match input.trim() {
-            "1" => register_studant(&mut studants),
-            "2" => change_studant(&mut studants),
-            "3" => delete_studant(&mut studants),
-            "4" => list_studants(&studants),
-            "5" => {
+        match input {
+            AcaoMenu::CadastrarAluno => register_studant(&mut studants),
+            AcaoMenu::AlterarAluno => change_studant(&mut studants),
+            AcaoMenu::ExcluirAluno => delete_studant(&mut studants),
+            AcaoMenu::ListarAlunos => list_studants(&studants),
+            AcaoMenu::Sair => {
                 println!("Saindo do sistema\n");
                 break;
             }
-            _ => println!("Opção inválida\n"),
         }
         clear_screen();
     }
