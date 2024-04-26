@@ -1,6 +1,6 @@
 use crate::{
     clear_screen, divider,
-    entidades::{Aluno, Nota},
+    models::aluno::{Aluno, Nota},
     timer,
 };
 
@@ -275,7 +275,7 @@ pub fn list_studants(studants: &Vec<Aluno>) {
         }
         println!("Média: {:.2}", aluno.media());
         println!("Situação: {}", aluno.situacao());
-        
+
         divider();
         let mut input = String::new();
         println!("Pressione enter para continuar");

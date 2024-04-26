@@ -1,12 +1,18 @@
-mod entidades;
+//imports metodo 1 sem a criação de arquivos extras
+mod models{
+    pub mod aluno;
+}
+//imports metodo 2 sem o arquivo mod.rs
+mod ui;
+//imports metodo 3 com arquivo mod.rs
 mod logica;
-mod tela;
 
-use entidades::Aluno;
-use logica::*;
-use tela::*;
+use models::aluno::Aluno;
+use ui::tela::*;
+use logica::logica::*;
 
-use crate::entidades::AcaoMenu;
+use crate::models::aluno::AcaoMenu;
+
 
 fn main() {
     println!("Iniciando sistema");
