@@ -10,6 +10,28 @@ pub struct Nota {
     pub nota: f32,
 }
 
+impl Aluno{
+    pub fn media(&self) -> f32{
+        let mut soma = 0.0;
+        for nota in &self.notas{
+            soma += nota.nota;
+        }
+        soma / self.notas.len() as f32
+    }
+
+    pub fn situacao(&self)->String{
+        let media = self.media();
+        if media >= 7.0{
+            return "Aprovado".to_string();
+        }else if media >= 5.0{ 
+            return "Recuperação".to_string();
+        }
+        
+        "Reprovado".to_string()
+    }
+
+}
+
 #[derive(Debug)]
 pub enum AcaoMenu{
     CadastrarAluno,

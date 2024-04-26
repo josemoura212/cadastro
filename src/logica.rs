@@ -273,6 +273,9 @@ pub fn list_studants(studants: &Vec<Aluno>) {
         for nota in &aluno.notas {
             println!("          {} : {}", nota.disciplina, nota.nota);
         }
+        println!("Média: {:.2}", aluno.media());
+        println!("Situação: {}", aluno.situacao());
+        
         divider();
         let mut input = String::new();
         println!("Pressione enter para continuar");
