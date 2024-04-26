@@ -1,8 +1,6 @@
-use crate::{
-    clear_screen, divider,
-    models::aluno::{Aluno, Nota},
-    timer,
-};
+use crate::{models::aluno::{Aluno, Nota}, ui::tela::{clear_screen, divider, timer}};
+
+
 
 pub fn register_grades(grades: &mut Vec<Nota>) {
     clear_screen();
