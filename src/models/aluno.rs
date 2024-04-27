@@ -1,10 +1,15 @@
 use std::str::FromStr;
 
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug,Serialize,Deserialize)]
 pub struct Aluno {
     pub nome: String,
     pub matricula: String,
     pub notas: Vec<Nota>,
 }
+
+#[derive(Debug,Serialize,Deserialize)]
 pub struct Nota {
     pub disciplina: String,
     pub nota: f32,
