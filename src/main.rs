@@ -1,5 +1,7 @@
 use std::io;
 
+use models::aluno::{Aluno, Nota};
+
 //imports metodo 1 sem a criação de arquivos extras
 mod models{
     pub mod aluno;
@@ -17,7 +19,24 @@ fn main() -> io::Result<()>{
     let aluno_repo = aluno_json::AlunoJsonRepo{path:"db/alunos.json".to_string()};
 
     aluno_repo.init();
-    ui::menu::menu();
+    // ui::menu::menu();
+
+    let aluno = Aluno{
+        matricula: "1524".to_string(),
+        nome: "José Augusto".to_string(),
+        notas: vec![
+            Nota{disciplina: "Matemática".to_string(), nota: 10.0},
+            Nota{disciplina: "Português".to_string(), nota: 8.0},
+        ]
+    };
+
+    aluno_repo.write(aluno);
+
+    let alunos = aluno_repo.read().unwrap();
+
+    for aluno in alunos{
+        println!("{:?}", aluno);
+    }
 
     Ok(())
 }

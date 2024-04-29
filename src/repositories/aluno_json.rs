@@ -29,13 +29,17 @@ impl AlunoJsonRepo{
         let mut aluno_string = String::new();
         arquivo.read_to_string(&mut aluno_string).expect("Erro ao ler o arquivo");
 
+        if aluno_string.is_empty(){
+            return None;
+        }
+
         let alunos:Vec<Aluno> = serde_json::from_str(&aluno_string).expect("Erro ao desserializar o arquivo");
 
         Some(alunos)
     }
 
     pub fn write(&self, aluno:Aluno){
-        let mut alunos = self.read();
+        let alunos = self.read();
 
         match alunos {
             Some(_) => {
