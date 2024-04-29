@@ -1,6 +1,8 @@
-use crate::{models::aluno::{Aluno, Nota}, ui::tela::{clear_screen, divider, timer}};
-
-
+use crate::{
+    aluno_json::AlunoJsonRepo,
+    models::aluno::{Aluno, Nota},
+    ui::tela::{clear_screen, divider, timer},
+};
 
 pub fn register_grades(grades: &mut Vec<Nota>) {
     clear_screen();
@@ -48,8 +50,22 @@ pub fn register_grades(grades: &mut Vec<Nota>) {
     return register_grades(grades);
 }
 
-pub fn register_studant(studants: &mut Vec<Aluno>) {
+fn buscar_aluno_por_matricula<'a>(
+    matricula: &'a String,
+    studants: &'a Vec<Aluno>,
+) -> Option<&'a Aluno> {
+    for aluno in studants.iter() {
+        if aluno.matricula == *matricula {
+            return Some(aluno);
+        }
+    }
+    return None;
+}
+
+pub fn register_studant(aluno_repo: &AlunoJsonRepo) {
     clear_screen();
+
+    let mut studants = aluno_repo.read().unwrap_or_default();
 
     let mut registration = String::new();
     println!("\nDigite a matrícula do aluno:");
@@ -59,13 +75,13 @@ pub fn register_studant(studants: &mut Vec<Aluno>) {
 
     registration = registration.trim().to_string();
 
-    let registration = match buscar_aluno_por_matricula(&registration, studants) {
+    let registration = match buscar_aluno_por_matricula(&registration, &studants) {
         Some(_) => {
             println!("Matrícula já cadastrada");
             let mut input = String::new();
             println!("Pressione enter para tentar novamente");
             std::io::stdin().read_line(&mut input).unwrap();
-            return register_studant(studants);
+            return register_studant(aluno_repo);
         }
         None => registration,
     };
@@ -87,11 +103,14 @@ pub fn register_studant(studants: &mut Vec<Aluno>) {
         matricula: registration,
         notas: grades,
     });
+    aluno_repo.write(studants);
 }
 
-pub fn change_studant(studants: &mut Vec<Aluno>) {
+pub fn change_studant(aluno_repo: &AlunoJsonRepo) {
     clear_screen();
     timer(1);
+
+    let mut studants = aluno_repo.read().unwrap_or_default();
     if studants.is_empty() {
         println!("Não há alunos cadastrados");
         let mut input = String::new();
@@ -179,18 +198,21 @@ pub fn change_studant(studants: &mut Vec<Aluno>) {
                 Ok(grade) => grade,
                 Err(_) => {
                     println!("Nota inválida");
-                    return change_studant(studants);
+                    return change_studant(aluno_repo);
                 }
             };
 
             nota.nota = grade;
         }
     }
+    aluno_repo.write(studants);
 }
 
-pub fn delete_studant(studants: &mut Vec<Aluno>) {
+pub fn delete_studant(aluno_repo: &AlunoJsonRepo) {
     clear_screen();
     timer(1);
+
+    let mut studants = aluno_repo.read().unwrap_or_default();
     if studants.is_empty() {
         println!("Não há alunos cadastrados");
         let mut input = String::new();
@@ -215,7 +237,7 @@ pub fn delete_studant(studants: &mut Vec<Aluno>) {
 
     matricula = matricula.trim().to_string();
 
-    let aluno = buscar_aluno_por_matricula(&matricula, studants);
+    let aluno = buscar_aluno_por_matricula(&matricula, &studants);
 
     let aluno = match aluno {
         Some(aluno) => aluno,
@@ -224,7 +246,7 @@ pub fn delete_studant(studants: &mut Vec<Aluno>) {
             let mut input = String::new();
             println!("Pressione enter para tentar novamente");
             std::io::stdin().read_line(&mut input).unwrap();
-            return delete_studant(studants);
+            return delete_studant(aluno_repo);
         }
     };
 
@@ -235,23 +257,14 @@ pub fn delete_studant(studants: &mut Vec<Aluno>) {
 
     studants.remove(index);
 
+    aluno_repo.write(studants);
+
     println!("Aluno excluído com sucesso");
     timer(2);
 }
 
-fn buscar_aluno_por_matricula<'a>(
-    matricula: &'a String,
-    studants: &'a Vec<Aluno>,
-) -> Option<&'a Aluno> {
-    for aluno in studants.iter() {
-        if aluno.matricula == *matricula {
-            return Some(aluno);
-        }
-    }
-    return None;
-}
-
-pub fn list_studants(studants: &Vec<Aluno>) {
+pub fn list_studants(aluno_repo: &AlunoJsonRepo) {
+    let studants = aluno_repo.read().unwrap_or_default();
     clear_screen();
     timer(1);
     if studants.is_empty() {

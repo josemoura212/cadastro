@@ -1,2 +1,2 @@
-pub mod tela;
 pub mod menu;
+pub mod tela;

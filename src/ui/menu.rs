@@ -1,11 +1,17 @@
-use crate::{logica::logica::*, models::aluno::{AcaoMenu, Aluno}};
+use crate::{
+    aluno_json::{self, AlunoJsonRepo},
+    logica::logica::*,
+    models::aluno::AcaoMenu,
+};
 
 use super::tela::{clear_screen, print_menu};
 
-
-
 pub fn menu() {
-    let mut studants: Vec<Aluno> = Vec::new();
+    let aluno_repo: AlunoJsonRepo = aluno_json::AlunoJsonRepo {
+        path: "db/alunos.json".to_string(),
+    };
+
+    aluno_repo.init();
 
     loop {
         print_menu();
@@ -13,7 +19,7 @@ pub fn menu() {
         let mut input = String::new();
         std::io::stdin().read_line(&mut input).unwrap();
 
-        let input = match input.trim().parse::<AcaoMenu>(){
+        let input = match input.trim().parse::<AcaoMenu>() {
             Ok(acao) => acao,
             Err(_) => {
                 println!("Opção inválida\n");
@@ -24,10 +30,10 @@ pub fn menu() {
         clear_screen();
 
         match input {
-            AcaoMenu::CadastrarAluno => register_studant(&mut studants),
-            AcaoMenu::AlterarAluno => change_studant(&mut studants),
-            AcaoMenu::ExcluirAluno => delete_studant(&mut studants),
-            AcaoMenu::ListarAlunos => list_studants(&studants),
+            AcaoMenu::CadastrarAluno => register_studant(&aluno_repo),
+            AcaoMenu::AlterarAluno => change_studant(&aluno_repo),
+            AcaoMenu::ExcluirAluno => delete_studant(&aluno_repo),
+            AcaoMenu::ListarAlunos => list_studants(&aluno_repo),
             AcaoMenu::Sair => {
                 println!("Saindo do sistema\n");
                 break;
