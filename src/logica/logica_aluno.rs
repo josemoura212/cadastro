@@ -284,7 +284,7 @@ pub fn list_studants(aluno_repo: &AlunoJsonRepo) {
 
         divider();
         let mut input = String::new();
-        println!("Pressione enter para continuar");
+        println!("Pressione enter para mostrar proximo aluno");
         std::io::stdin().read_line(&mut input).unwrap();
         clear_screen();
     }
