@@ -1,1 +1,1 @@
-pub mod logica;
+pub mod logica_aluno;

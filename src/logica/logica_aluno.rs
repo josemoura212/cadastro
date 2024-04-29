@@ -47,19 +47,14 @@ pub fn register_grades(grades: &mut Vec<Nota>) {
         return;
     }
 
-    return register_grades(grades);
+    register_grades(grades)
 }
 
 fn buscar_aluno_por_matricula<'a>(
     matricula: &'a String,
-    studants: &'a Vec<Aluno>,
+    studants: &'a [Aluno],
 ) -> Option<&'a Aluno> {
-    for aluno in studants.iter() {
-        if aluno.matricula == *matricula {
-            return Some(aluno);
-        }
-    }
-    return None;
+    studants.iter().find(|&aluno| aluno.matricula == *matricula)
 }
 
 pub fn register_studant(aluno_repo: &AlunoJsonRepo) {
