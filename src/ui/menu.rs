@@ -1,10 +1,10 @@
-use crate::{aluno_json::AlunoJsonRepo, logica::logica_aluno::*, models::aluno::AcaoMenu};
+use crate::{aluno_json::AlunoJsonRepo, core_config::config, logica::logica_aluno::*, models::aluno::AcaoMenu};
 
 use super::tela::{clear_screen, print_menu};
 
 pub fn menu() {
     let aluno_repo: AlunoJsonRepo = AlunoJsonRepo {
-        path: "db/alunos.json".to_string(),
+        path: config::get_json_db_alunos_path(),
     };
 
     aluno_repo.init();

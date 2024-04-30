@@ -3,6 +3,9 @@ use std::io;
 mod models {
     pub mod aluno;
 }
+mod core_config{
+    pub mod config;
+}
 //imports metodo 2 sem o arquivo mod.rs
 mod ui;
 //imports metodo 3 com arquivo mod.rs
