@@ -10,6 +10,8 @@ mod logica;
 //metodo 4
 #[path = "repositories/aluno_json.rs"]
 mod aluno_json;
+#[path = "repositories/aluno_mysql.rs"]
+mod aluno_mysql;
 
 fn main() -> io::Result<()> {
     ui::menu::menu();

@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  db:
+    image: mysql:5.7
+    command: --innodb-use-native-aio=0
+    container_name: db
+    restart: always
+    ports:
+      - "3306:3306"
+    tty: true
+    # volumes:
+    #   - ./mysql:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=rustdb
+      - MYSQL_PASSWORD=1524
+      - MYSQL_ROOT_PASSWORD=1524
+      - MYSQL_USER=jose
