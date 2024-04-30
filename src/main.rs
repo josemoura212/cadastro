@@ -3,7 +3,7 @@ use std::io;
 mod models {
     pub mod aluno;
 }
-mod core_config{
+mod core_config {
     pub mod config;
 }
 //imports metodo 2 sem o arquivo mod.rs
