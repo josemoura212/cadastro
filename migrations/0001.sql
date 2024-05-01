@@ -13,3 +13,6 @@ create table nota(
     materia varchar(50) not null,
     foreign key (matricula) references aluno(matricula)
 );
+
+insert aluno(nome,matricula) values("Jose","1524");
+insert nota(matricula,nota,materia) values("1524",8.5,"Matematica");

@@ -1,4 +1,4 @@
-use mysql::{prelude::Queryable, Pool, PooledConn};
+use mysql::{params, prelude::Queryable, Pool, PooledConn};
 
 use crate::models::aluno::{Aluno, Nota};
 
@@ -50,17 +50,21 @@ impl AlunoMySqlRepo {
     }
 
     pub fn save(&self, aluno: Aluno) {
-        let mut query = "INSERT INTO aluno (matricula, nome) VALUES (?, ?)".to_string();
-        let mut params = vec![aluno.matricula, aluno.nome];
+        let mut conn = self.get_conn();
+
+
+        conn.exec_drop("INSERT INTO aluno (matricula, nome) VALUES (:matricula, :nome)", params! {
+            "matricula" => &aluno.matricula,
+            "nome" => aluno.nome,
+        }).unwrap();
 
         for nota in &aluno.notas {
-            query = format!("{}; INSERT INTO nota (matricula, materia, nota) VALUES (?, ?, ?)", query);
-            params.push(nota.disciplina.to_string());
-            params.push(nota.nota.to_string());
+            conn.exec_drop("INSERT INTO nota (matricula, materia, nota) VALUES (:matricula, :materia, :nota)", params! {
+                "matricula" => &aluno.matricula,
+                "materia" => &nota.disciplina,
+                "nota" => &nota.nota,
+            }).unwrap();
         }
-
-        let mut conn = self.get_conn();
-        conn.exec_drop(query, params).unwrap();
     }
 
     pub fn change(&self, aluno: Aluno) {
