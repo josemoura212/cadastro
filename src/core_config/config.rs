@@ -11,11 +11,11 @@ pub fn get_mysql_db_alunos_path() -> String {
 
     let user = match env::var("DATABASE_USER") {
         Ok(path) => path,
-        Err(_) => String::from("root"),
+        Err(_) => String::from("jose"),
     };
     let password = match env::var("DATABASE_PASSWORD") {
         Ok(path) => path,
-        Err(_) => String::from(""),
+        Err(_) => String::from("1524"),
     };
     let db = match env::var("DATABASE_DB") {
         Ok(path) => path,
@@ -30,5 +30,5 @@ pub fn get_mysql_db_alunos_path() -> String {
         Err(_) => String::from("3306"),
     };
 
-    format!("mysql://{}:{}@{}:{}/{}", password, user, host, port, db)
+    format!("mysql://{}:{}@{}:{}/{}", user,password, host, port, db)
 }

@@ -2,14 +2,14 @@ use std::str::FromStr;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize,Clone)]
 pub struct Aluno {
     pub nome: String,
     pub matricula: String,
     pub notas: Vec<Nota>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize,Clone)]
 pub struct Nota {
     pub disciplina: String,
     pub nota: f32,

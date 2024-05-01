@@ -1,5 +1,4 @@
 use crate::{
-    aluno_json::AlunoJsonRepo,
     aluno_mysql::AlunoMySqlRepo,
     models::aluno::{Aluno, Nota},
     ui::tela::{clear_screen, divider, timer},
@@ -61,7 +60,7 @@ fn buscar_aluno_por_matricula<'a>(
 pub fn register_studant(aluno_repo: &AlunoMySqlRepo) {
     clear_screen();
 
-    let mut studants = aluno_repo.read().unwrap_or_default();
+    let studants = aluno_repo.get_all().unwrap_or_default();
 
     let mut registration = String::new();
     println!("\nDigite a matrícula do aluno:");
@@ -94,19 +93,20 @@ pub fn register_studant(aluno_repo: &AlunoMySqlRepo) {
 
     register_grades(&mut grades);
 
-    studants.push(Aluno {
+    let studant = Aluno {
         nome: name,
         matricula: registration,
         notas: grades,
-    });
-    // aluno_repo.write(studants);
+    };
+    
+    aluno_repo.save(studant);
 }
 
-pub fn change_studant(aluno_repo: &AlunoJsonRepo) {
+pub fn change_studant(aluno_repo: &AlunoMySqlRepo) {
     clear_screen();
     timer(1);
 
-    let mut studants = aluno_repo.read().unwrap_or_default();
+    let mut studants = aluno_repo.get_all().unwrap_or_default();
     if studants.is_empty() {
         println!("Não há alunos cadastrados");
         let mut input = String::new();
@@ -201,14 +201,14 @@ pub fn change_studant(aluno_repo: &AlunoJsonRepo) {
             nota.nota = grade;
         }
     }
-    aluno_repo.write(studants);
+    aluno_repo.change(studant.clone());
 }
 
-pub fn delete_studant(aluno_repo: &AlunoJsonRepo) {
+pub fn delete_studant(aluno_repo: &AlunoMySqlRepo) {
     clear_screen();
     timer(1);
 
-    let mut studants = aluno_repo.read().unwrap_or_default();
+    let mut studants = aluno_repo.get_all().unwrap_or_default();
     if studants.is_empty() {
         println!("Não há alunos cadastrados");
         let mut input = String::new();
@@ -253,14 +253,14 @@ pub fn delete_studant(aluno_repo: &AlunoJsonRepo) {
 
     studants.remove(index);
 
-    aluno_repo.write(studants);
+    aluno_repo.delete(matricula);
 
     println!("Aluno excluído com sucesso");
     timer(2);
 }
 
-pub fn list_studants(aluno_repo: &AlunoJsonRepo) {
-    let studants = aluno_repo.read().unwrap_or_default();
+pub fn list_studants(aluno_repo: &AlunoMySqlRepo) {
+    let studants = aluno_repo.get_all().unwrap_or_default();
     clear_screen();
     timer(1);
     if studants.is_empty() {

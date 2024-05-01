@@ -1,4 +1,5 @@
 use std::io;
+
 //imports metodo 1 sem a criação de arquivos extras
 mod models {
     pub mod aluno;
@@ -17,6 +18,7 @@ mod aluno_json;
 mod aluno_mysql;
 
 fn main() -> io::Result<()> {
+    
     ui::menu::menu();
 
     Ok(())

@@ -98,12 +98,9 @@ fn loop_menu_mysql() {
 
         match input {
             AcaoMenu::CadastrarAluno => mysql::register_studant(&aluno_repo),
-            AcaoMenu::AlterarAluno => (),
-            AcaoMenu::ListarAlunos => (),
-            AcaoMenu::ExcluirAluno => (),
-            // AcaoMenu::AlterarAluno => mysql::change_studant(&aluno_repo),
-            // AcaoMenu::ExcluirAluno => mysql::delete_studant(&aluno_repo),
-            // AcaoMenu::ListarAlunos => mysql::list_studants(&aluno_repo),
+            AcaoMenu::AlterarAluno => mysql::change_studant(&aluno_repo),
+            AcaoMenu::ExcluirAluno => mysql::delete_studant(&aluno_repo),
+            AcaoMenu::ListarAlunos => mysql::list_studants(&aluno_repo),
             AcaoMenu::Sair => {
                 println!("Saindo do sistema\n");
                 break;
