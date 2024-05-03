@@ -50,16 +50,13 @@ pub fn register_grades(grades: &mut Vec<Nota>) {
     register_grades(grades)
 }
 
-fn buscar_aluno_por_matricula<'a>(
-    matricula: &String,
+fn buscar_aluno_por_matricula(
+    matricula: &str,
     aluno_repo: &AlunoMySqlRepo,
 ) -> Option<Aluno> {
     //! studants.iter().find(|&aluno| aluno.matricula == *matricula)
-    let aluno = aluno_repo.get_by_matricula(matricula.clone());
-    match aluno {
-        Some(aluno) => Some(aluno),
-        None => None,
-    }
+    
+    aluno_repo.get_by_matricula(matricula.to_owned())
 }
 
 pub fn register_studant(aluno_repo: &AlunoMySqlRepo) {
@@ -73,7 +70,7 @@ pub fn register_studant(aluno_repo: &AlunoMySqlRepo) {
 
     registration = registration.trim().to_string();
 
-    let registration = match buscar_aluno_por_matricula(&registration, &aluno_repo) {
+    let registration = match buscar_aluno_por_matricula(&registration, aluno_repo) {
         Some(_) => {
             println!("Matrícula já cadastrada");
             let mut input = String::new();
@@ -236,7 +233,7 @@ pub fn delete_studant(aluno_repo: &AlunoMySqlRepo) {
 
     matricula = matricula.trim().to_string();
 
-    let aluno = buscar_aluno_por_matricula(&matricula, &aluno_repo);
+    let aluno = buscar_aluno_por_matricula(&matricula, aluno_repo);
 
     let aluno = match aluno {
         Some(aluno) => aluno,
