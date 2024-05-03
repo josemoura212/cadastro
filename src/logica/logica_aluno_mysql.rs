@@ -54,6 +54,7 @@ fn buscar_aluno_por_matricula<'a>(
     matricula: &String,
     aluno_repo: &AlunoMySqlRepo,
 ) -> Option<Aluno> {
+    //! studants.iter().find(|&aluno| aluno.matricula == *matricula)
     let aluno = aluno_repo.get_by_matricula(matricula.clone());
     match aluno {
         Some(aluno) => Some(aluno),
@@ -63,7 +64,6 @@ fn buscar_aluno_por_matricula<'a>(
 
 pub fn register_studant(aluno_repo: &AlunoMySqlRepo) {
     clear_screen();
-
 
     let mut registration = String::new();
     println!("\nDigite a matrícula do aluno:");
