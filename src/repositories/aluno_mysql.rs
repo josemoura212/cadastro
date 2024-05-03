@@ -49,6 +49,42 @@ impl AlunoMySqlRepo {
         Some(alunos)
     }
 
+    pub fn get_by_matricula(&self, matricula: String) -> Option<Aluno> {
+        let mut conn = self.get_conn();
+
+        let query = "SELECT 
+                                alu.matricula,
+                                alu.nome,
+                            group_concat(nota.materia,':',nota.nota separator ';') as notas 
+                            FROM aluno alu inner join nota on alu.matricula = nota.matricula
+                            WHERE alu.matricula = :matricula
+                            GROUP BY alu.matricula;";
+        let aluno: Option<Aluno> = conn
+            .exec_first(
+                query,
+                params! {
+                    "matricula" => &matricula
+                },
+            )
+            .unwrap()
+            .map(|(matricula, nome, notas): (String, String, String)| Aluno {
+                matricula,
+                nome,
+                notas: notas
+                    .split(';')
+                    .map(|nota| {
+                        let mut nota = nota.split(':');
+                        Nota {
+                            disciplina: nota.next().unwrap().to_string(),
+                            nota: nota.next().unwrap().parse().unwrap(),
+                        }
+                    })
+                    .collect(),
+            });
+
+        aluno
+    }
+
     pub fn save(&self, aluno: Aluno) {
         let mut conn = self.get_conn();
         let mut tx = conn.start_transaction(TxOpts::default()).unwrap();
