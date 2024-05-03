@@ -33,9 +33,9 @@ impl AlunoMySqlRepo {
                     matricula,
                     nome,
                     notas: notas
-                        .split(';')
+                        .split(";")
                         .map(|nota| {
-                            let mut nota = nota.split(':');
+                            let mut nota = nota.split(":");
                             Nota {
                                 disciplina: nota.next().unwrap().to_string(),
                                 nota: nota.next().unwrap().parse().unwrap(),
