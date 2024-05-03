@@ -1,4 +1,4 @@
-use mysql::{params, prelude::Queryable, Pool, PooledConn};
+use mysql::{params, prelude::Queryable, Pool, PooledConn, TxOpts};
 
 use crate::models::aluno::{Aluno, Nota};
 
@@ -33,9 +33,9 @@ impl AlunoMySqlRepo {
                     matricula,
                     nome,
                     notas: notas
-                        .split(";")
+                        .split(';')
                         .map(|nota| {
-                            let mut nota = nota.split(":");
+                            let mut nota = nota.split(':');
                             Nota {
                                 disciplina: nota.next().unwrap().to_string(),
                                 nota: nota.next().unwrap().parse().unwrap(),
@@ -51,44 +51,77 @@ impl AlunoMySqlRepo {
 
     pub fn save(&self, aluno: Aluno) {
         let mut conn = self.get_conn();
+        let mut tx = conn.start_transaction(TxOpts::default()).unwrap();
 
-
-        conn.exec_drop("INSERT INTO aluno (matricula, nome) VALUES (:matricula, :nome)", params! {
-            "matricula" => &aluno.matricula,
-            "nome" => aluno.nome,
-        }).unwrap();
+        tx.exec_drop(
+            "INSERT INTO aluno (matricula, nome) VALUES (:matricula, :nome)",
+            params! {
+                "matricula" => &aluno.matricula,
+                "nome" => aluno.nome,
+            },
+        )
+        .unwrap();
 
         for nota in &aluno.notas {
-            conn.exec_drop("INSERT INTO nota (matricula, materia, nota) VALUES (:matricula, :materia, :nota)", params! {
-                "matricula" => &aluno.matricula,
-                "materia" => &nota.disciplina,
-                "nota" => &nota.nota,
-            }).unwrap();
+            tx.exec_drop(
+                "INSERT INTO nota (matricula, materia, nota) VALUES (:matricula, :materia, :nota)",
+                params! {
+                    "matricula" => &aluno.matricula,
+                    "materia" => &nota.disciplina,
+                    "nota" => &nota.nota,
+                },
+            )
+            .unwrap();
         }
+
+        tx.commit().unwrap();
     }
 
     pub fn change(&self, aluno: Aluno) {
-        let mut query = "UPDATE aluno SET nome = ? WHERE matricula = ?".to_string();
-        let mut params = vec![aluno.nome, aluno.matricula.clone()];
+        let mut conn = self.get_conn();
+
+        conn.exec_drop(
+            "UPDATE aluno SET nome = :nome WHERE matricula = :matricula",
+            params!(
+                "nome" => aluno.nome,
+                "matricula" => &aluno.matricula
+            ),
+        )
+        .unwrap();
 
         for nota in &aluno.notas {
-            query = format!("{}; UPDATE nota SET nota = ? WHERE matricula = ? AND materia = ?", query);
-            params.push(nota.nota.to_string());
-            params.push(aluno.matricula.clone());
-            params.push(nota.disciplina.to_string());
+            conn.exec_drop(
+                "UPDATE nota SET nota = :nota WHERE matricula = :matricula AND materia = :materia",
+                params!(
+                    "nota" => &nota.nota,
+                    "matricula" => &aluno.matricula,
+                    "materia" => &nota.disciplina
+                ),
+            )
+            .unwrap();
         }
-
-        let mut conn = self.get_conn();
-        conn.exec_drop(query, params).unwrap();
     }
 
     pub fn delete(&self, matricula: String) {
-        let query = "DELETE FROM aluno WHERE matricula = ?; DELETE FROM nota WHERE matricula = ?"
-            .to_string();
-        let params = vec![&matricula, &matricula];
-
         let mut conn = self.get_conn();
-        conn.exec_drop(query, params).unwrap();
-    }
+        let mut tx = conn.start_transaction(TxOpts::default()).unwrap();
 
+        tx.exec_drop(
+            "DELETE FROM nota WHERE matricula = :matricula",
+            params!(
+                "matricula" => &matricula
+            ),
+        )
+        .unwrap();
+
+        tx.exec_drop(
+            "DELETE FROM aluno WHERE matricula = :matricula",
+            params!(
+                "matricula" => &matricula
+            ),
+        )
+        .unwrap();
+
+        tx.commit().unwrap();
+    }
 }

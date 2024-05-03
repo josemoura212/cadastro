@@ -30,7 +30,7 @@ pub fn menu() {
                 clear_screen();
                 loop_menu_mysql();
             }
-            "3"=>{
+            "3" => {
                 println!("Saindo");
                 break;
             }

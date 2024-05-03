@@ -98,7 +98,7 @@ pub fn register_studant(aluno_repo: &AlunoMySqlRepo) {
         matricula: registration,
         notas: grades,
     };
-    
+
     aluno_repo.save(studant);
 }
 

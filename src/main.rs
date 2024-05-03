@@ -18,7 +18,6 @@ mod aluno_json;
 mod aluno_mysql;
 
 fn main() -> io::Result<()> {
-    
     ui::menu::menu();
 
     Ok(())

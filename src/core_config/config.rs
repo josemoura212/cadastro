@@ -30,5 +30,5 @@ pub fn get_mysql_db_alunos_path() -> String {
         Err(_) => String::from("3306"),
     };
 
-    format!("mysql://{}:{}@{}:{}/{}", user,password, host, port, db)
+    format!("mysql://{}:{}@{}:{}/{}", user, password, host, port, db)
 }
