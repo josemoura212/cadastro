@@ -8,6 +8,12 @@ use crate::{
 
 use super::tela::{clear_screen, print_menu};
 
+#[derive(Debug, PartialEq, PartialOrd)]
+enum DBType {
+    Local,
+    MySQL,
+}
+
 pub fn menu() {
     loop {
         println!("Bem vindo ao sistema de cadastro de alunos\n");
@@ -23,12 +29,12 @@ pub fn menu() {
             "1" => {
                 println!("Banco Local Selecionado\n");
                 clear_screen();
-                loop_menu_local();
+                lopp_menu(DBType::Local)
             }
             "2" => {
                 println!("Banco MySQL Selecionado\n");
                 clear_screen();
-                loop_menu_mysql();
+                lopp_menu(DBType::MySQL)
             }
             "3" => {
                 println!("Saindo");
@@ -41,44 +47,14 @@ pub fn menu() {
     }
 }
 
-fn loop_menu_local() {
-    let aluno_repo: AlunoJsonRepo = AlunoJsonRepo {
+fn lopp_menu(db: DBType) {
+    let aluno_repo_json = AlunoJsonRepo {
         path: config::get_json_db_alunos_path(),
     };
-
-    aluno_repo.init();
-    loop {
-        print_menu();
-
-        let mut input = String::new();
-        std::io::stdin().read_line(&mut input).unwrap();
-
-        let input = match input.trim().parse::<AcaoMenu>() {
-            Ok(acao) => acao,
-            Err(_) => {
-                println!("Opção inválida\n");
-                continue;
-            }
-        };
-
-        clear_screen();
-
-        match input {
-            AcaoMenu::CadastrarAluno => json::register_studant(&aluno_repo),
-            AcaoMenu::AlterarAluno => json::change_studant(&aluno_repo),
-            AcaoMenu::ExcluirAluno => json::delete_studant(&aluno_repo),
-            AcaoMenu::ListarAlunos => json::list_studants(&aluno_repo),
-            AcaoMenu::Sair => {
-                println!("Saindo do sistema\n");
-                break;
-            }
-        }
-        clear_screen();
+    let aluno_repo_mysql = AlunoMySqlRepo::new(&config::get_mysql_db_alunos_path());
+    if db == DBType::Local {
+        aluno_repo_json.init();
     }
-}
-
-fn loop_menu_mysql() {
-    let aluno_repo = AlunoMySqlRepo::new(&config::get_mysql_db_alunos_path());
 
     loop {
         print_menu();
@@ -96,16 +72,30 @@ fn loop_menu_mysql() {
 
         clear_screen();
 
-        match input {
-            AcaoMenu::CadastrarAluno => mysql::register_studant(&aluno_repo),
-            AcaoMenu::AlterarAluno => mysql::change_studant(&aluno_repo),
-            AcaoMenu::ExcluirAluno => mysql::delete_studant(&aluno_repo),
-            AcaoMenu::ListarAlunos => mysql::list_studants(&aluno_repo),
-            AcaoMenu::Sair => {
-                println!("Saindo do sistema\n");
-                break;
+        if db == DBType::Local {
+            match input {
+                AcaoMenu::CadastrarAluno => json::register_studant(&aluno_repo_json),
+                AcaoMenu::AlterarAluno => json::change_studant(&aluno_repo_json),
+                AcaoMenu::ExcluirAluno => json::delete_studant(&aluno_repo_json),
+                AcaoMenu::ListarAlunos => json::list_studants(&aluno_repo_json),
+                AcaoMenu::Sair => {
+                    println!("Saindo do sistema\n");
+                    break;
+                }
+            }
+        } else {
+            match input {
+                AcaoMenu::CadastrarAluno => mysql::register_studant(&aluno_repo_mysql),
+                AcaoMenu::AlterarAluno => mysql::change_studant(&aluno_repo_mysql),
+                AcaoMenu::ExcluirAluno => mysql::delete_studant(&aluno_repo_mysql),
+                AcaoMenu::ListarAlunos => mysql::list_studants(&aluno_repo_mysql),
+                AcaoMenu::Sair => {
+                    println!("Saindo do sistema\n");
+                    break;
+                }
             }
         }
+
         clear_screen();
     }
 }

@@ -50,15 +50,11 @@ impl FromStr for AcaoMenu {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().trim() {
-            "1" => Ok(AcaoMenu::CadastrarAluno),
-            "cadastrar" => Ok(AcaoMenu::CadastrarAluno),
-            "2" => Ok(AcaoMenu::AlterarAluno),
-            "alterar" => Ok(AcaoMenu::AlterarAluno),
-            "3" => Ok(AcaoMenu::ExcluirAluno),
-            "excluir" => Ok(AcaoMenu::ExcluirAluno),
-            "4" => Ok(AcaoMenu::ListarAlunos),
-            "listar" => Ok(AcaoMenu::ListarAlunos),
-            "5" => Ok(AcaoMenu::Sair),
+            "1" | "cadastrar" => Ok(AcaoMenu::CadastrarAluno),
+            "2" | "alterar" => Ok(AcaoMenu::AlterarAluno),
+            "3" | "excluir" => Ok(AcaoMenu::ExcluirAluno),
+            "4" | "listar" => Ok(AcaoMenu::ListarAlunos),
+            "5" | "sair" => Ok(AcaoMenu::Sair),
             _ => Err(()),
         }
     }

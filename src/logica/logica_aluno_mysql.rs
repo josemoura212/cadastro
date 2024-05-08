@@ -50,12 +50,9 @@ pub fn register_grades(grades: &mut Vec<Nota>) {
     register_grades(grades)
 }
 
-fn buscar_aluno_por_matricula(
-    matricula: &str,
-    aluno_repo: &AlunoMySqlRepo,
-) -> Option<Aluno> {
+fn buscar_aluno_por_matricula(matricula: &str, aluno_repo: &AlunoMySqlRepo) -> Option<Aluno> {
     //! studants.iter().find(|&aluno| aluno.matricula == *matricula)
-    
+
     aluno_repo.get_by_matricula(matricula.to_owned())
 }
 
